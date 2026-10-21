@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EAF2EF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="סוד באימוג'ים">
+<title>סוד באימוג'ים</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤫</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#EAF2EF; --surface:#FFFFFF; --ink:#1C2B28; --muted:#5E716C; --line:#CFDDD8;
+  --accent:#F0653A; --accent-ink:#FFFFFF; --bubble:#D9F5C9; --bubble-ink:#1C2B28; --ok:#1F8A5B; --err:#C2362B;
+  --display:"Secular One","Assistant",system-ui,sans-serif;
+  --body:"Assistant",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#111816; --surface:#1A2421; --ink:#E6EFEC; --muted:#93A6A0; --line:#2C3A36;
+  --accent:#FF7A4F; --accent-ink:#1A0E08; --bubble:#1F4A35; --bubble-ink:#E6EFEC; --ok:#5BD39A; --err:#FF7B6E; color-scheme:dark}}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:560px;margin:0 auto;padding-block:28px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:20px}
+[hidden]{display:none!important}
+header{display:flex;flex-direction:column;gap:4px}
+h1{font-family:var(--display);font-weight:400;font-size:2.1rem;line-height:1.1;margin:0;text-wrap:balance}
+h1 .sp{display:inline-block;transform:rotate(-8deg)}
+.lede{color:var(--muted);margin:0;max-width:44ch}
+
+.modes{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px}
+.modes button{font:600 1rem var(--body);border:0;border-radius:999px;padding:10px 8px;background:transparent;color:var(--muted);cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+.field{display:flex;flex-direction:column;gap:6px}
+label{font-weight:700;font-size:.95rem}
+.hint{color:var(--muted);font-size:.85rem}
+input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;width:100%}
+textarea{min-height:110px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.pw{display:flex;gap:8px}
+.pw input{flex:1;min-width:0}
+.ghost{font:600 .9rem var(--body);background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:0 14px;cursor:pointer}
+.remember{display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;color:var(--muted)}
+.remember input{width:auto}
+
+.go{font:400 1.25rem var(--display);background:var(--accent);color:var(--accent-ink);border:0;border-radius:16px;padding:14px;cursor:pointer;transition:transform .1s}
+.go:active{transform:scale(.98)}
+
+.out{display:flex;flex-direction:column;gap:10px}
+.bubble{background:var(--bubble);color:var(--bubble-ink);border-radius:18px 18px 4px 18px;padding:14px 16px;font-size:1.35rem;line-height:1.55;word-break:break-all;min-height:1.5em;white-space:pre-wrap}
+.bubble.plain{font-size:1.1rem;word-break:normal}
+.bubble.empty{font-size:1rem;color:var(--muted);background:transparent;border:1.5px dashed var(--line)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions .ghost,.actions a{padding:10px 14px;text-decoration:none;display:inline-flex;align-items:center}
+.status{font-weight:600;font-size:.95rem;min-height:1.4em;margin:0}
+.status.ok{color:var(--ok)} .status.err{color:var(--err)}
+
+.how{border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:.92rem}
+.how h2{font-family:var(--display);font-weight:400;font-size:1.15rem;color:var(--ink);margin:0 0 6px}
+.how ol{margin:0;padding-inline-start:1.2em;display:flex;flex-direction:column;gap:4px}
+@media (prefers-reduced-motion:reduce){.go{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>סוד באימוג'ים <span class="sp">🤫</span></h1>
+    <p class="lede">מסתירים הודעה בתוך שורת אימוג'ים. רק מי שיודע את הסיסמה יכול להחזיר אותה לטקסט.</p>
+  </header>
+
+  <div class="modes" role="group" aria-label="מצב">
+    <button id="mEnc" type="button" aria-pressed="true">🔒 להצפין</button>
+    <button id="mDec" type="button" aria-pressed="false">🔓 לפענח</button>
+  </div>
+
+  <div class="field">
+    <label for="pw">סיסמה משותפת</label>
+    <div class="pw">
+      <input id="pw" type="password" autocomplete="off" placeholder="אותה סיסמה אצל שניכם">
+      <button class="ghost" id="showPw" type="button">הצג</button>
+    </div>
+    <label class="remember"><input id="remember" type="checkbox"> לזכור את הסיסמה בדפדפן הזה (לא מומלץ אם הילדים משתמשים בו)</label>
+  </div>
+
+  <div class="field">
+    <label for="msg" id="msgLabel">ההודעה שלך</label>
+    <textarea id="msg" placeholder="מה רציתם לכתוב?"></textarea>
+    <span class="hint" id="msgHint">כתבו טקסט רגיל בעברית או באנגלית.</span>
+  </div>
+
+  <button class="go" id="go" type="button">להפוך לאימוג'ים</button>
+
+  <section class="out" aria-live="polite">
+    <p class="status" id="status"></p>
+    <div class="bubble empty" id="result">התוצאה תופיע כאן</div>
+    <div class="actions" id="actions" hidden>
+      <button class="ghost" id="copy" type="button">העתקה</button>
+      <a class="ghost" id="wa" href="#" target="_blank" rel="noopener">שליחה בוואטסאפ</a>
+    </div>
+  </section>
+
+  <section class="how">
+    <h2>איך זה עובד</h2>
+    <ol>
+      <li>קובעים פעם אחת סיסמה משותפת, בעל-פה ולא בוואטסאפ.</li>
+      <li>כותבים הודעה, מצפינים ומדביקים בצ'אט את שורת האימוג'ים.</li>
+      <li>בצד השני מעתיקים את האימוג'ים, עוברים ל"לפענח" ומדביקים.</li>
+    </ol>
+    <p>ההצפנה (AES-256) מתבצעת בטלפון עצמו, ושום דבר לא נשלח לשרת. בלי הסיסמה אי אפשר לפענח.</p>
+  </section>
+</div>
+
+<script>
+(function(){
+  // 256-emoji alphabet: each byte becomes one emoji. Do not change, or old messages won't decode.
+  const ranges=[[0x1F600,0x1F64F],[0x1F680,0x1F6C5],[0x1F400,0x1F43E],[0x1F345,0x1F37C]];
+  const ALPHA=[];
+  for(const [a,b] of ranges){for(let c=a;c<=b&&ALPHA.length<256;c++)ALPHA.push(String.fromCodePoint(c));}
+  const IDX=new Map(ALPHA.map((e,i)=>[e,i]));
+  const SALT=8, IV=12;
+  const enc=new TextEncoder(), dec=new TextDecoder();
+
+  async function key(pw,salt){
+    const base=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']);
+    return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  }
+  async function encrypt(text,pw){
+    const salt=crypto.getRandomValues(new Uint8Array(SALT)), iv=crypto.getRandomValues(new Uint8Array(IV));
+    const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},await key(pw,salt),enc.encode(text)));
+    const all=new Uint8Array(SALT+IV+ct.length); all.set(salt);all.set(iv,SALT);all.set(ct,SALT+IV);
+    return Array.from(all,b=>ALPHA[b]).join('');
+  }
+  async function decrypt(emo,pw){
+    const bytes=[];
+    for(const ch of Array.from(emo)){
+      if(IDX.has(ch))bytes.push(IDX.get(ch));
+      else if(/[\s️‍‎‏]/.test(ch))continue;
+      else throw new Error('foreign');
+    }
+    if(bytes.length<SALT+IV+17)throw new Error('short');
+    const a=new Uint8Array(bytes);
+    const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:a.slice(SALT,SALT+IV)},await key(pw,a.slice(0,SALT)),a.slice(SALT+IV));
+    return dec.decode(pt);
+  }
+
+  const $=id=>document.getElementById(id);
+  if(!window.crypto||!crypto.subtle){
+    document.querySelector('.wrap').insertAdjacentHTML('afterbegin','<p class="status err">הדף צריך לרוץ בכתובת https (למשל GitHub Pages) כדי שההצפנה תעבוד.</p>');
+  }
+  let mode='enc';
+  const drafts={enc:'',dec:''};
+
+  function setMode(m){
+    if(m===mode)return;
+    drafts[mode]=$('msg').value; mode=m;
+    $('mEnc').setAttribute('aria-pressed',m==='enc'); $('mDec').setAttribute('aria-pressed',m==='dec');
+    $('msg').value=drafts[m];
+    $('msgLabel').textContent=m==='enc'?'ההודעה שלך':'ההודעה המוצפנת';
+    $('msg').placeholder=m==='enc'?'מה רציתם לכתוב?':'הדביקו כאן את שורת האימוג\'ים מהצ\'אט';
+    $('msgHint').textContent=m==='enc'?'כתבו טקסט רגיל בעברית או באנגלית.':'אפשר להדביק את כל ההודעה, רווחים לא מפריעים.';
+    $('go').textContent=m==='enc'?'להפוך לאימוג\'ים':'לחשוף את ההודעה';
+    clearOut();
+  }
+  function clearOut(){
+    const r=$('result'); r.className='bubble empty'; r.textContent='התוצאה תופיע כאן';
+    $('actions').hidden=true; status('','');
+  }
+  function status(t,c){const s=$('status'); s.textContent=t; s.className='status '+c;}
+
+  $('mEnc').onclick=()=>setMode('enc');
+  $('mDec').onclick=()=>setMode('dec');
+  $('showPw').onclick=()=>{const p=$('pw');const s=p.type==='password';p.type=s?'text':'password';$('showPw').textContent=s?'הסתר':'הצג';};
+
+  // Pasting emoji code while in encrypt mode switches to decrypt automatically
+  $('msg').addEventListener('paste',e=>{
+    const t=e.clipboardData?e.clipboardData.getData('text'):'';
+    if(mode==='enc'&&t){const chars=Array.from(t.replace(/\s/g,''));if(chars.length>20&&chars.every(c=>IDX.has(c)||c==='️')){e.preventDefault();setMode('dec');$('msg').value=t;}}
+  });
+
+  try{const saved=localStorage.getItem('emoji-secret-pw');if(saved){$('pw').value=saved;$('remember').checked=true;}}catch(e){}
+  function persist(){try{if($('remember').checked)localStorage.setItem('emoji-secret-pw',$('pw').value);else localStorage.removeItem('emoji-secret-pw');}catch(e){}}
+  $('remember').onchange=persist;
+
+  $('go').onclick=async()=>{
+    const pw=$('pw').value, txt=$('msg').value.trim();
+    if(!pw){status('צריך סיסמה כדי להמשיך.','err');$('pw').focus();return;}
+    if(!txt){status(mode==='enc'?'כתבו קודם הודעה.':'הדביקו קודם את האימוג\'ים.','err');$('msg').focus();return;}
+    persist();
+    const r=$('result');
+    try{
+      if(mode==='enc'){
+        const out=await encrypt(txt,pw);
+        r.className='bubble'; r.textContent=out;
+        $('wa').href='https://wa.me/?text='+encodeURIComponent(out);
+        $('wa').hidden=false; $('actions').hidden=false;
+        status('מוכן. העתיקו ושלחו.','ok');
+      }else{
+        const out=await decrypt(txt,pw);
+        r.className='bubble plain'; r.textContent=out;
+        $('wa').hidden=true; $('actions').hidden=false;
+        status('ההודעה פוענחה.','ok');
+      }
+    }catch(err){
+      clearOut();
+      if(err.message==='foreign')status('יש כאן תווים שלא שייכים לקוד. העתיקו רק את שורת האימוג\'ים.','err');
+      else if(err.message==='short')status('ההודעה קצרה מדי. אולי חלק ממנה לא הועתק?','err');
+      else status('הסיסמה לא מתאימה, או שההודעה נחתכה בהעתקה.','err');
+    }
+  };
+
+  $('copy').onclick=()=>{
+    const t=$('result').textContent;
+    const done=()=>{$('copy').textContent='הועתק ✓';setTimeout(()=>$('copy').textContent='העתקה',1600);};
+    const fallback=()=>{const s=getSelection(),rg=document.createRange();rg.selectNodeContents($('result'));s.removeAllRanges();s.addRange(rg);status('הטקסט סומן. העתיקו אותו ידנית.','ok');};
+    try{navigator.clipboard.writeText(t).then(done,fallback);}catch(e){fallback();}
+  };
+})();
+</script>
+</body>
+</html>
